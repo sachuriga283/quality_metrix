@@ -12,3 +12,4 @@ sorted_files = load_data(r'S:\Sachuriga\Ephys_Recording\CR_CA1\65410', file_suff
 
 for file in sorted_files:
     qualitymetrix(file)
+yes
