@@ -21,7 +21,8 @@ def qualitymetrix(path):
     dtype_int = 'int16'  # Adjust according to your MATLAB dataset
     gain_to_uV = 0.195  # Adjust according to your MATLAB dataset
     offset_to_uV = 0  # Adjust according to your MATLAB dataset
-
+    global_job_kwargs = dict(n_jobs=24, chunk_size=10000, chunk_duration="1s", total_memory="32G")
+    si.set_global_job_kwargs(**global_job_kwargs)
     temp_path = path.split("_phy")
     raw_path = temp_path[0]
     stream_name = 'Record Node 101#OE_FPGA_Acquisition_Board-100.Rhythm Data'
@@ -67,7 +68,7 @@ def qualitymetrix(path):
     pi.write_prb(f"{probe_name}.prb", probegroup, group_mode="by_shank")
     recording_prb = rec_save.set_probe(probe, group_mode="by_shank")
 
-    wf = si.extract_waveforms(recording_prb, sorting, folder='C:/temp_waveforms', overwrite=True, allow_unfiltered=True)
+    wf = si.extract_waveforms(recording_prb, sorting, folder='D:/temp_waveform/', overwrite=True, allow_unfiltered=True)
 
     spike_locations = post.compute_unit_locations(waveform_extractor=wf,
                                                   method='center_of_mass',
