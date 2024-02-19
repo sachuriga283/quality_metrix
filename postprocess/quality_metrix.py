@@ -68,7 +68,7 @@ def qualitymetrix(path):
 
 
     spike_locations = post.compute_unit_locations(waveform_extractor=wf,
-                                                  method='center_of_mass',
+                                                   method='center_of_mass',
                                                   radius_um=50.)
 
     from spikeinterface.postprocessing import compute_principal_components,compute_template_metrics
