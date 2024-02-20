@@ -63,7 +63,7 @@ def qualitymetrix(path):
     sorting.set_property(key='group', values=sorting.get_property("channel_group"))
 
     wf = si.extract_waveforms(rec_save, sorting, folder='C:/temp_waveform/', overwrite=True, 
-                              sparse=True, method="by_property",by_property="group")
+                              sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
 
 
     spike_locations = post.compute_unit_locations(waveform_extractor=wf,
@@ -71,7 +71,6 @@ def qualitymetrix(path):
                                                   radius_um=50.)
 
     from spikeinterface.postprocessing import compute_principal_components,compute_template_metrics,compute_spike_amplitudes
-    compute_spike_amplitudes(wf)
 
     amplitudes = compute_spike_amplitudes(wf,peak_sign='both')
     unit_locations = post.compute_unit_locations(wf)
@@ -79,7 +78,7 @@ def qualitymetrix(path):
     correlograms, bins = post.compute_correlograms(wf)
     similarity = post.compute_template_similarity(wf)
 
-    compute_principal_components(waveform_extractor=wf,n_components=3,whiten=False,mode='by_channel_local')
+    compute_principal_components(waveform_extractor=wf,n_components=3,whiten=True,mode='by_channel_local',dtype='float32')
     compute_template_metrics(wf,sparsity=wf.sparsity)
     qm_params = sqm.get_default_qm_params()
     qm_params["nn_isolation"]["max_spikes"]=10000000
