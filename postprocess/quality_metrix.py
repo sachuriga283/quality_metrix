@@ -7,7 +7,7 @@ from spikeinterface.preprocessing import (bandpass_filter, notch_filter, common_
 import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
-
+from postprocess.add_wfcor import add_wf_cor
 def main() -> object:
     """
 
@@ -68,7 +68,7 @@ def qualitymetrix(path):
 
 
     spike_locations = post.compute_unit_locations(waveform_extractor=wf,
-                                                   method='center_of_mass',
+                                                   method= 'monopolar_triangulation',
                                                   radius_um=50.)
 
     from spikeinterface.postprocessing import compute_principal_components,compute_template_metrics
@@ -87,6 +87,8 @@ def qualitymetrix(path):
     reclaimer = common_reference(recp, reference='global', operator='median')
     si.write_binary_recording(reclaimer, path_iron / 'recording_lfp.bin', dtype='int16')
     si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
+    add_wf_cor(path_iron)
+    print("complete adding template and cordinates")
 
 if __name__ == "__main__":
     main()
