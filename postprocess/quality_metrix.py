@@ -63,7 +63,6 @@ def qualitymetrix(path):
     sorting.set_property(key='group', values=sorting.get_property("channel_group"))
 
     wf = si.extract_waveforms(rec_save, sorting, folder='C:/temp_waveform/', overwrite=True, 
-                              allow_unfiltered=True, 
                               sparse=True, method="by_property",by_property="group")
 
 
@@ -71,11 +70,22 @@ def qualitymetrix(path):
                                                    method= 'monopolar_triangulation',
                                                   radius_um=50.)
 
-    from spikeinterface.postprocessing import compute_principal_components,compute_template_metrics
-    pca = compute_principal_components(waveform_extractor=wf, n_components=5, mode="by_channel_local")
-    metrics = sqm.compute_quality_metrics(waveform_extractor=wf)
-    assert 'isolation_distance' in metrics.columns
-    compute_template_metrics(wf)
+    from spikeinterface.postprocessing import compute_principal_components,compute_template_metrics,compute_spike_amplitudes
+    compute_spike_amplitudes(wf)
+
+    amplitudes = compute_spike_amplitudes(wf,peak_sign='both')
+    unit_locations = post.compute_unit_locations(wf)
+    spike_locations = post.compute_spike_locations(wf)
+    correlograms, bins = post.compute_correlograms(wf)
+    similarity = post.compute_template_similarity(wf)
+
+    compute_principal_components(waveform_extractor=wf,n_components=3,whiten=False,mode='by_channel_local')
+    compute_template_metrics(wf,sparsity=wf.sparsity)
+    qm_params = sqm.get_default_qm_params()
+    qm_params["nn_isolation"]["max_spikes"]=10000000
+    metrics = sqm.compute_quality_metrics(waveform_extractor=wf, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
+
+
     path_iron = Path(path + "_manual")
     sex.export_to_phy(waveform_extractor=wf,
                       output_folder = path_iron,
