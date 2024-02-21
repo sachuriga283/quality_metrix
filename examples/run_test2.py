@@ -14,7 +14,7 @@ from postprocess.nwbPHYnOPHYS import nwbPHYnOPHYS
 from postprocess.add_wfcor import add_wf_cor
 # set params for nwb
 sex = "F"
-ID = "65409"
+ID = "65410"
 age = "P45+"
 species = "Mus musculus"
 vedio_search_directory = base_data_folder/fr"Ephys_Vedio/CR_CA1/"
@@ -22,30 +22,24 @@ path_save = base_data_folder/fr"nwb"
 
 def main():
     
-
     #getting sorted files
     folder_path = fr"{str(base_data_folder)}/Ephys_Recording/CR_CA1/{ID}/"
-
-
     ##for quality metrix
     sorted_files = load_data(folder_path, file_suffix='_phy_k')
-
     ##for nwb
     #sorted_files = load_data(folder_path, file_suffix='_phy_k_manual')
     #quality_metrix and export to new phy folder
 
     for file in sorted_files:
         print(file)
-
-        qualitymetrix(file)
+        #qualitymetrix(file)
         #add_wf_cor(file)
-        #nwbPHYnOPHYS(file,
-        #             sex,
-        #             age,
-        #             species,
-        #             vedio_search_directory,
-        #             path_to_save_nwbfile = path_save)
-    
+        nwbPHYnOPHYS(fr"{file}_manual",
+                     sex,
+                     age,
+                     species,
+                     vedio_search_directory,
+                     path_to_save_nwbfile = path_save)
     print("completet!!!!")
 
 if __name__== "__main__":

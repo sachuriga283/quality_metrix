@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import os
 def main():
-    path = r"S:/Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-08_16-39-36_A_phy_k_manual"
+    path = r"S:/Sachuriga/Ephys_Recording/CR_CA1/65410/65410_2023-11-25_13-57-58_A_phy_k_manual"
     add_wf_cor(path)
 
 def add_wf_cor(path):
@@ -16,9 +17,23 @@ def add_wf_cor(path):
     df3 = pd.merge(df0, df1,left_index=True,right_index=True)
     df4 = pd.merge(df3, df2,left_index=True,right_index=True)
 
+    # List all files in the current directory
+    files = os.listdir(path)
+    # Filter out files that match the pattern "cluster**.tsv"
+    cluster_files = [file for file in files if file.startswith('cluster') and file.endswith('.tsv')]
+    # Initialize an empty dataframe to hold the merged data
 
-    print(df4)
-    df4.to_csv(Path(fr"{path}/cluster_group.tsv"), 
+    merged_df = pd.DataFrame()
+    # Loop through the filtered files, read each one, and append to the merged dataframe
+
+    for file in cluster_files:
+        file_path = os.path.join(path, file)
+        df = pd.read_csv(file_path, sep='\t')
+        merged_df = pd.concat([merged_df,df], axis=1)
+        
+    df5 =  pd.concat([df4,merged_df], axis=1)
+    print(df0)
+    df5.to_csv(Path(fr"{path}/cluster_info.tsv"), 
                sep="\t", header=True, 
                index=True)
 if __name__== "__main__":
