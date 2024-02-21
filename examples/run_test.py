@@ -20,7 +20,7 @@ def main():
     #for file in sorted_files:
     #quality_metrix and export to new phy folder
 
-    for file in sorted_files:
+    for file in sorted_files[-2:]:
         print(file)
         qualitymetrix(file)
 
@@ -29,7 +29,7 @@ def main():
         #             age,
         #             species,
         #             vedio_search_directory)
-        #qualitymetrix(file)
+       
         #copy_file(file, file +"_cured")
 
     print("completet!!!!")

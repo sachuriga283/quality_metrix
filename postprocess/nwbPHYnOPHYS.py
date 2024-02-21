@@ -19,6 +19,17 @@ from pynwb.behavior import (
     SpatialSeries,
 )
 
+def main():
+    
+    path = "S:/Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-02_15-07-29_A_phy_k_manual"
+    sex = "F"
+    ages = "P60"
+    species = "Mus musculus"
+    vedio_search_directory = "S:/Sachuriga/Ephys_Vedio/CR_CA1"
+    
+    nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory)
+
+
 def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory):
 
     temp = path[-35:]
@@ -96,3 +107,6 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory):
     metadata["NWBFile"].update(session_start_time=session_start_time)
 
     converter.run_conversion(nwbfile_path=nwbfile_path, metadata=metadata)
+
+if __name__== "__main__":
+    main()
