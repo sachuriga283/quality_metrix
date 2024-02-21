@@ -26,26 +26,23 @@ def main():
     ages = "P60"
     species = "Mus musculus"
     vedio_search_directory = "S:/Sachuriga/Ephys_Vedio/CR_CA1"
-    
+    path_to_save_nwbfile = "S:/Sachuriga/nwb"
     nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory)
 
 
-def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory):
+def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfile):
 
     temp = path[-35:]
     path1 = temp.split("/")
 
     file = path.split("_phy_")
     UD = path1[1].split("_")
-    #print(UD)
 
     ECEPHY_DATA_PATH = file[0]
-    path_to_save_nwbfile = "S:/Sachuriga/nwb"
     stream_name = 'Record Node 102#OE_FPGA_Acquisition_Board-101.Rhythm Data'
     folder_path = fr"{ECEPHY_DATA_PATH}/Record Node 102"
     
     folder_path = Path(folder_path)
-    #print(folder_path)
 
     # Change the folder_path to the appropriate location in your system
     interface_ophys = OpenEphysRecordingInterface(folder_path=folder_path,stream_name=stream_name)

@@ -20,7 +20,7 @@ def main():
     #for file in sorted_files:
     #quality_metrix and export to new phy folder
 
-    for file in sorted_files[-2:]:
+    for file in sorted_files[-1:]:
         print(file)
         qualitymetrix(file)
 
