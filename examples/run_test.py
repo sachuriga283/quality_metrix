@@ -7,7 +7,7 @@ from postprocess.quality_metrix import qualitymetrix
 from postprocess.nwbPHYnOPHYS import nwbPHYnOPHYS
 
 sex = "F"
-ID = "65410"
+ID = "65409"
 age = "P45+"
 species = "Mus musculus"
 vedio_search_directory = 'S:/Sachuriga/Ephys_Vedio/CR_CA1/'
@@ -23,7 +23,7 @@ def main():
     for file in sorted_files[-1:]:
         print(file)
         qualitymetrix(file)
-
+        #add_wf_cor(path)
         #nwbPHYnOPHYS(file,
         #             sex,
         #             age,

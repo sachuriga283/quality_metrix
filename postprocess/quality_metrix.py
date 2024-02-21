@@ -71,14 +71,13 @@ def qualitymetrix(path):
                                                   radius_um=50.)
 
     from spikeinterface.postprocessing import compute_principal_components,compute_template_metrics
-    
+
 
     compute_principal_components(waveform_extractor=wf,n_components=3,whiten=True,mode='by_channel_local',dtype='float32')
-    compute_template_metrics(wf,sparsity=wf.sparsity)
+    compute_template_metrics(wf)
     qm_params = sqm.get_default_qm_params()
     qm_params["nn_isolation"]["max_spikes"]=10000
     metrics = sqm.compute_quality_metrics(waveform_extractor=wf, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
-
 
     path_iron = Path(path + "_manual")
     sex.export_to_phy(waveform_extractor=wf,
@@ -91,7 +90,6 @@ def qualitymetrix(path):
     reclaimer = common_reference(recp, reference='global', operator='median')
     si.write_binary_recording(reclaimer, path_iron / 'recording_lfp.bin', dtype='int16')
     si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
-    add_wf_cor(path_iron)
     print("complete adding template and cordinates")
 
 if __name__ == "__main__":
