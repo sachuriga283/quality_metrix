@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import sys
 base_path = Path("Q:/Sachuriga/Sachuriga_Python")
@@ -26,9 +25,6 @@ def main():
     folder_path = fr"{str(base_data_folder)}/Ephys_Recording/CR_CA1/{ID}/"
     ##for quality metrix
     sorted_files = load_data(folder_path, file_suffix='_phy_k')
-    ##for nwb
-    #sorted_files = load_data(folder_path, file_suffix='_phy_k_manual')
-    #quality_metrix and export to new phy folder
 
     for file in sorted_files:
         print(file)
