@@ -93,9 +93,5 @@ def qualitymetrix(path):
     si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
     print("complete adding template and cordinates")
     
-<<<<<<< HEAD
-=======
-
->>>>>>> 4d58a27e149c2aaa9be04ee60a35abd0f68af246
 if __name__ == "__main__":
     main()
