@@ -87,7 +87,6 @@ def qualitymetrix(path):
                       copy_binary=True)
 
     wf.save(Path(path + "_manual/waveforms"), format='binary')
-    add_wf_cor(path)
     
     recp = bandpass_filter(recording_prb, freq_min=1, freq_max=475)
     reclaimer = common_reference(recp, reference='global', operator='median')
