@@ -7,7 +7,6 @@ from spikeinterface.preprocessing import (bandpass_filter, notch_filter, common_
 import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
-from postprocess.add_wfcor import add_wf_cor
 def main() -> object:
     """
 
@@ -73,8 +72,9 @@ def qualitymetrix(path):
     from spikeinterface.postprocessing import compute_principal_components,compute_template_metrics
 
 
-    compute_principal_components(waveform_extractor=wf,n_components=3,whiten=True,mode='by_channel_local',dtype='float32')
-    compute_template_metrics(wf)
+    compute_principal_components(waveform_extractor=wf,n_components=3,whiten=True,mode='by_channel_local',dtype='float64')
+    
+    template_metrix = compute_template_metrics(wf)
     qm_params = sqm.get_default_qm_params()
     qm_params["nn_isolation"]["max_spikes"]=10000
     metrics = sqm.compute_quality_metrics(waveform_extractor=wf, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
@@ -86,11 +86,16 @@ def qualitymetrix(path):
                       copy_binary=True)
 
     wf.save(Path(path + "_manual/waveforms"), format='binary')
+    
     recp = bandpass_filter(recording_prb, freq_min=1, freq_max=475)
     reclaimer = common_reference(recp, reference='global', operator='median')
     si.write_binary_recording(reclaimer, path_iron / 'recording_lfp.bin', dtype='int16')
     si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
     print("complete adding template and cordinates")
     
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4d58a27e149c2aaa9be04ee60a35abd0f68af246
 if __name__ == "__main__":
     main()
