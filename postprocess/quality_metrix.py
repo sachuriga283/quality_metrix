@@ -91,6 +91,8 @@ def qualitymetrix(path):
     si.write_binary_recording(reclaimer, path_iron / 'recording_lfp.bin', dtype='int16')
     si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
     print("complete adding template and cordinates")
+    
+    add_wf_cor(path)
 
 if __name__ == "__main__":
     main()
