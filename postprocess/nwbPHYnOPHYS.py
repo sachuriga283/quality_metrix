@@ -8,6 +8,8 @@ from neuroconv import ConverterPipe
 from postprocess.Get_positions import load_positions
 from pynwb import NWBHDF5IO, NWBFile, TimeSeries
 from pynwb import NWBHDF5IO, NWBFile, TimeSeries
+import numpy as np
+
 from pynwb.behavior import (
     BehavioralEpochs,
     BehavioralEvents,
@@ -20,8 +22,7 @@ from pynwb.behavior import (
 )
 
 def main():
-    
-    path = "S:/Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-02_15-07-29_A_phy_k_manual"
+    path = "S:\Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-08_16-39-36_A_phy_k_manual"
     sex = "F"
     ages = "P60"
     species = "Mus musculus"
@@ -32,11 +33,17 @@ def main():
 
 def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfile):
 
-    temp = path[-35:]
+    if path.endswith("phy_k_manual"):
+        num2cal = int(41)
+    elif path.endswith("phy_k"):
+        num2cal = int(35)
+
+    temp = path[0 - num2cal:]
     path1 = temp.split("/")
 
     file = path.split("_phy_")
     UD = path1[1].split("_")
+    print(file[1])
 
     ECEPHY_DATA_PATH = file[0]
     stream_name = 'Record Node 102#OE_FPGA_Acquisition_Board-101.Rhythm Data'
@@ -49,6 +56,12 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
 
     # Extract what metadata we can from the source files
     folder1_path = f"{path}"  # Change the folder_path to the location of the data in your system
+
+    #sample_num = np.load(fr"{folder1_path}/spike_times.npy")
+    #timestemp = np.load(fr'{folder_path}\experiment1\recording1\continuous\OE_FPGA_Acquisition_Board-101.Rhythm Data/sample_numbers.npy')
+    print(folder_path)
+    #time_spk = timestemp[sample_num]
+    #np.save(fr"{folder1_path}/spike_times.npy",time_spk)
     interface_phy = PhySortingInterface(folder_path=folder1_path, verbose=False)
     # For data provenance we add the time zone information to the conversionSS
 
@@ -77,7 +90,6 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     behavior_module = nwbfile.create_processing_module(name="behavior", description="processed behavioral data")
     behavior_module.add(position)
 
- 
     nwbfile_path = fr"{path_to_save_nwbfile}/{path1[1]}.nwb"
     io = NWBHDF5IO(nwbfile_path, mode="w")
     io.write(nwbfile)
@@ -95,14 +107,13 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     metadata["general_session_id "] = UD[3]
     metadata["lab"] = "quattrocolo lab"
     metadata["institution"] = 'kavili institute for system neuroscience'
-    metadata["session_description"] = f"{UD[3]}room open-field CA1 recording"
+    metadata["session_description"] = f"{UD[3]}_room open-field CA1 recording"
     
     print(metadata)
     # For data provenance we add the time zone information to the conversionSS
     session_start_time = metadata["NWBFile"]["session_start_time"].replace(tzinfo=tz.gettz("US/Pacific"))
 
     metadata["NWBFile"].update(session_start_time=session_start_time)
-
     converter.run_conversion(nwbfile_path=nwbfile_path, metadata=metadata)
 
 if __name__== "__main__":

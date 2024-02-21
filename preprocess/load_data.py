@@ -6,7 +6,7 @@ def main() -> object:
 def load_data(path):
     print('y')
 
-def load_data(root_folder, file_suffix='_phy_k'):
+def load_data(root_folder, file_suffix='_phy_k_manual'):
     """
     List all folder names under the specified root folder, including their absolute paths,
     and files that end with a specific suffix.
@@ -33,6 +33,8 @@ def load_data(root_folder, file_suffix='_phy_k'):
     for name in folder_paths:
         if name.endswith(file_suffix):
             file_paths.append(os.path.join(root_folder, name))
+
+    print(file_paths)
 
     return file_paths
 
