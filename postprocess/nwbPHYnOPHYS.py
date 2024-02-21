@@ -57,18 +57,16 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     # Extract what metadata we can from the source files
     folder1_path = f"{path}"  # Change the folder_path to the location of the data in your system
 
-    #sample_num = np.load(fr"{folder1_path}/spike_times.npy")
-    #timestemp = np.load(fr'{folder_path}\experiment1\recording1\continuous\OE_FPGA_Acquisition_Board-101.Rhythm Data/sample_numbers.npy')
+    sample_num = np.load(fr"{folder1_path}/spike_times.npy")
+    timestemp = np.load(fr'{folder_path}\experiment1\recording1\continuous\OE_FPGA_Acquisition_Board-101.Rhythm Data/sample_numbers.npy')
     print(folder_path)
-    #time_spk = timestemp[sample_num]
-    #np.save(fr"{folder1_path}/spike_times.npy",time_spk)
+    time_spk = timestemp[sample_num]
+    np.save(fr"{folder1_path}/spike_times.npy",time_spk)
     interface_phy = PhySortingInterface(folder_path=folder1_path, verbose=False)
     # For data provenance we add the time zone information to the conversionSS
 
     converter = ConverterPipe(data_interfaces=[interface_ophys, interface_phy,], verbose=False)
-    
     # Extract what metadata we can from the source files
- 
     
     arr_with_new_col = load_positions(path,vedio_search_directory,folder_path,UD)
     print(arr_with_new_col.shape)
@@ -96,7 +94,6 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     io.close()
 
     metadata = converter.get_metadata()
-
     metadata["NWBFile"]["experimenter"] = ["sachuriga,sachuriga"]
     metadata["Subject"] = dict(
         subject_id=UD[0],
