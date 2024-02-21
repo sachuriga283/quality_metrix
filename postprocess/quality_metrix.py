@@ -7,7 +7,6 @@ from spikeinterface.preprocessing import (bandpass_filter, notch_filter, common_
 import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
-from postprocess.add_wfcor import add_wf_cor
 def main() -> object:
     """
 
@@ -87,7 +86,6 @@ def qualitymetrix(path):
                       copy_binary=True)
 
     wf.save(Path(path + "_manual/waveforms"), format='binary')
-    add_wf_cor(path)
     
     recp = bandpass_filter(recording_prb, freq_min=1, freq_max=475)
     reclaimer = common_reference(recp, reference='global', operator='median')
