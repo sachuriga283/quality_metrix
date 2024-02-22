@@ -22,13 +22,13 @@ def main():
 
     for file in sorted_files[-1:]:
         print(file)
-        qualitymetrix(file)
-        #add_wf_cor(path)
-        #nwbPHYnOPHYS(file,
-        #             sex,
-        #             age,
-        #             species,
-        #             vedio_search_directory)
+        # qualitymetrix(file)
+        add_wf_cor(path)
+        nwbPHYnOPHYS(file,
+                     sex,
+                     age,
+                     species,
+                     vedio_search_directory)
        
         #copy_file(file, file +"_cured")
 
