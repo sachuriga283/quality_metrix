@@ -3,7 +3,7 @@ import spikeinterface.extractors as se
 import spikeinterface.postprocessing as post
 from spikeinterface.preprocessing import (bandpass_filter, notch_filter, common_reference, highpass_filter, zscore,
                                           remove_artifacts, preprocesser_dict, normalize_by_quantile, center,
-                                          correct_motion, load_motion_info)
+                                          resample)
 import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
@@ -88,7 +88,7 @@ def qualitymetrix(path):
     wf.save(Path(path + "_manual/waveforms"), format='binary')
     
     recp = bandpass_filter(recording_prb, freq_min=1, freq_max=475)
-    reclaimer = common_reference(recp, reference='global', operator='median')
+    resample
     si.write_binary_recording(reclaimer, path_iron / 'recording_lfp.bin', dtype='int16')
     si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
     print("complete adding template and cordinates")
