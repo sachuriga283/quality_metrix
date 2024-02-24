@@ -14,6 +14,3 @@ def copy_file(origin_p,destinate_p):
         print(f"Unable to copy file. {e}")
     except:
         print("Unexpected error:", sys.exc_info())
-
-if __name__ == "__main__":
-    main()

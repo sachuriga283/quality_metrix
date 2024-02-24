@@ -1,11 +1,6 @@
 import math
 import numpy as np
 
-def main():
-    msg_cache = recording.get_times()  # Assuming this is your data source
-    msg_n = lfp.get_num_samples()  # Total number of samples you want
-    down_sample(msg_cache,msg_n)
-
 def down_sample(msg_cache,msg_n):
     import math
 
@@ -24,6 +19,3 @@ def down_sample(msg_cache,msg_n):
             break  # Exit loop if index exceeds msg_cache size
 
     return times
-
-if __name__== "__main__":
-    main()
