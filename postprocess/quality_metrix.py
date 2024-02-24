@@ -1,7 +1,8 @@
 import spikeinterface as si
 import spikeinterface.extractors as se
 import spikeinterface.postprocessing as post
-from spikeinterface.preprocessing import (bandpass_filter, common_reference,resample)
+from spikeinterface.preprocessing import (bandpass_filter,
+                                           common_reference,resample)
 import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
@@ -57,7 +58,7 @@ def qualitymetrix(path):
     rec = bandpass_filter(recording_prb, freq_min=300, freq_max=6000)
     rec_save = common_reference(rec, reference='global', operator='median')
 
-    sorting.set_property(key='group', values=sorting.get_property("channel_group"))
+    sorting.set_property(key='group', values = sorting.get_property("channel_group"))
 
     wf = si.extract_waveforms(rec_save, sorting, folder='C:/temp_waveform/', overwrite=True, 
                               sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
