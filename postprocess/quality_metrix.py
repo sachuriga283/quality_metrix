@@ -88,10 +88,10 @@ def qualitymetrix(path):
     wf.save(Path(path + "_manual/waveforms"), format='binary')
     
     recp = bandpass_filter(recording_prb, freq_min=1, freq_max=475)
-    resample
-    si.write_binary_recording(reclaimer, path_iron / 'recording_lfp.bin', dtype='int16')
+    lfp = resample(recp, resample_rate=1000, margin_ms=100.0)
+    si.write_binary_recording(lfp, path_iron / 'lfp.bin')
     si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
-    print("complete adding template and cordinates")
+    print("complete adding template and cordinates aa")
     
 if __name__ == "__main__":
     main()
