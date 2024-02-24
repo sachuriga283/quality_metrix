@@ -6,8 +6,8 @@ from spikeinterface.preprocessing import (bandpass_filter,
 import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
-from preprocess.d import
-
+from preprocess.down_sample import down_sample
+import numpy as np
 
 def main() -> object:
     """
@@ -76,10 +76,10 @@ def qualitymetrix(path):
 
     compute_principal_components(waveform_extractor=wf,n_components=3,whiten=True,mode='by_channel_local',dtype='float64')
     
-    template_metrix = compute_template_metrics(wf)
+    compute_template_metrics(wf)
     qm_params = sqm.get_default_qm_params()
     qm_params["nn_isolation"]["max_spikes"]=10000
-    metrics = sqm.compute_quality_metrics(waveform_extractor=wf, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
+    sqm.compute_quality_metrics(waveform_extractor=wf, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
 
     path_iron = Path(path + "_manual")
     sex.export_to_phy(waveform_extractor=wf,
@@ -91,7 +91,10 @@ def qualitymetrix(path):
     
     recp = bandpass_filter(recording_prb, freq_min=1, freq_max=475)
     lfp = resample(recp, resample_rate=1000, margin_ms=100.0)
-    si.write_binary_recording(lfp, path_iron / 'lfp.bin')
+    lfp_car =  common_reference(lfp,reference='global', operator='average')
+    lfp_times = down_sample(recording.get_times(),lfp.get_num_samples())
+    np.save(path_iron / 'lfp.bin', lfp_times)
+    si.write_binary_recording(lfp_car, path_iron / 'lfp.bin')
     si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
     print("complete adding template and cordinates aa")
     
