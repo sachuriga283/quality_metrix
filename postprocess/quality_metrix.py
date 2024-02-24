@@ -1,9 +1,7 @@
 import spikeinterface as si
 import spikeinterface.extractors as se
 import spikeinterface.postprocessing as post
-from spikeinterface.preprocessing import (bandpass_filter, notch_filter, common_reference, highpass_filter, zscore,
-                                          remove_artifacts, preprocesser_dict, normalize_by_quantile, center,
-                                          resample)
+from spikeinterface.preprocessing import (bandpass_filter, common_reference,resample)
 import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
