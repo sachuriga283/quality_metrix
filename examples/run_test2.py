@@ -1,3 +1,6 @@
+import sys
+sys.path.append('Q:\sachuriga\Sachuriga_Python\quality_metrix')
+
 from pathlib import Path
 import sys
 base_path = Path("Q:/Sachuriga/Sachuriga_Python")

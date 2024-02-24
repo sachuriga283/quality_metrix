@@ -6,6 +6,9 @@ from spikeinterface.preprocessing import (bandpass_filter,
 import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
+from preprocess. import
+
+
 def main() -> object:
     """
 
