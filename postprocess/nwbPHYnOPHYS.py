@@ -84,7 +84,64 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     nwbfile = NWBFile(
         session_description="Mouse exploring an open field",  # required
         identifier="sachuriga",  # required
-        session_start_time=datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("America/Los_Angeles")))  # required) 
+        session_start_time=datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("America/Los_Angeles")))  # required)
+    
+    device = nwbfile.create_device(name="multi-shanks", 
+                                   description="cambridgeneurotech_mini-amp-64-ASSY-236-F", 
+                                   manufacturer="cambridgeneurotech") 
+    
+    nwbfile.add_electrode_column(name="label", description="label of electrode")
+
+    nshanks = 6
+    electrode_counter = 0
+
+    for ishank in range(nshanks):
+    # create an electrode group for this shank
+    electrode_group = nwbfile.create_electrode_group(
+    name="shank{}".format(ishank),
+    description="electrode group for shank {}".format(ishank),
+    device=device,
+        location="hipocampus")
+        if ishank==1 or ishank==6:
+            nchannels_per_shank = 11
+        else:
+            nchannels_per_shank = 12
+        # add electrodes to the electrode table
+        for ielec in range(nchannels_per_shank):
+            nwbfile.add_electrode(
+                group=electrode_group,
+                label="shank{}elec{}".format(ishank, ielec),
+                location="hipocampus",
+            )
+            electrode_counter += 1
+    all_table_region = nwbfile.create_electrode_table_region(region=list(range(electrode_counter)),  # reference row indices 0 to N-1
+                                                             description="all electrodes")
+    lfp_time = np.load(fr"{folder1_path}/lfp_times.npy")
+    carlafp_data = np.load(fr"{folder1_path}/lfp_car.npy")
+
+
+    lfp_car_electrical_series = ElectricalSeries(
+        name="car_lfp",
+        data=carlafp_data,
+        electrodes=all_table_region,
+        starting_time=lfp_time [0],  # timestamp of the first sample in seconds relative to the session start time
+        rate = 1000.0),  # in Hz)
+    car_lfp = LFP(electrical_series=lfp_car_electrical_series)
+    ecephys_module = nwbfile.create_processing_module(name="ecephys", 
+                                                      description="1-475 Hz bandpass filtered LFP data with car reference")
+    ecephys_module.add(car_lfp)
+
+    lfp_raw = np.load(fr"{folder1_path}/lfp.npy")
+    lfp_electrical_series = ElectricalSeries(
+        name="lfp",
+        data=lfp_raw,
+        electrodes=all_table_region,
+        starting_time=lfp_time[0],  # timestamp of the first sample in seconds relative to the session start time
+        rate = 1000.0),  # in Hz)
+    lfp = LFP(electrical_series=lfp_electrical_series)
+    ecephys_module = nwbfile.create_processing_module(name="ecephys", 
+                                                      description="1-475 Hz bandpass filtered LFP data")
+    ecephys_module.add(lfp)
 
     position = Position(spatial_series=position_spatial_series)
     behavior_module = ProcessingModule(name="behavior", description="processed behavioral data")

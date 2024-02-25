@@ -93,9 +93,10 @@ def qualitymetrix(path):
     lfp = resample(recp, resample_rate=1000, margin_ms=100.0)
     lfp_car =  common_reference(lfp,reference='global', operator='average')
     lfp_times = down_sample(recording.get_times(),lfp.get_num_samples())
-    np.save(path_iron / 'lfp.bin', lfp_times)
-    si.write_binary_recording(lfp_car, path_iron / 'lfp.bin')
-    si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
+    np.save(path_iron / 'lfp_times.np', lfp_times)
+    np.save(path_iron / 'lfp_car.np', lfp_car.get_traces()) # type: ignore
+    np.save(path_iron / 'lfp.np', lfp.get_traces()) # type: ignore
+
     print("complete adding template and cordinates aa")
     
 if __name__ == "__main__":
