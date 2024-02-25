@@ -16,7 +16,7 @@ from postprocess.nwbPHYnOPHYS import nwbPHYnOPHYS
 from postprocess.add_wfcor import add_wf_cor
 # set params for nwb
 sex = "F"
-ID = "65410"
+ID = "65409"
 age = "P45+"
 species = "Mus musculus"
 vedio_search_directory = base_data_folder/fr"Ephys_Vedio/CR_CA1/"
@@ -29,7 +29,7 @@ def main():
     ##for quality metrix
     sorted_files = load_data(folder_path, file_suffix='_phy_k')
 
-    for file in sorted_files:
+    for file in sorted_files[-1:]:
         print(file)
         qualitymetrix(file)
         add_wf_cor(fr"{file}_manual")

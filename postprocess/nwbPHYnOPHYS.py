@@ -97,10 +97,10 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
 
     for ishank in range(nshanks):
     # create an electrode group for this shank
-    electrode_group = nwbfile.create_electrode_group(
-    name="shank{}".format(ishank),
-    description="electrode group for shank {}".format(ishank),
-    device=device,
+        electrode_group = nwbfile.create_electrode_group(
+        name="shank{}".format(ishank),
+        description="electrode group for shank {}".format(ishank),
+        device=device,
         location="hipocampus")
         if ishank==1 or ishank==6:
             nchannels_per_shank = 11
@@ -111,15 +111,13 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
             nwbfile.add_electrode(
                 group=electrode_group,
                 label="shank{}elec{}".format(ishank, ielec),
-                location="hipocampus",
-            )
+                location="hipocampus")
             electrode_counter += 1
+
     all_table_region = nwbfile.create_electrode_table_region(region=list(range(electrode_counter)),  # reference row indices 0 to N-1
                                                              description="all electrodes")
     lfp_time = np.load(fr"{folder1_path}/lfp_times.npy")
     carlafp_data = np.load(fr"{folder1_path}/lfp_car.npy")
-
-
     lfp_car_electrical_series = ElectricalSeries(
         name="car_lfp",
         data=carlafp_data,
