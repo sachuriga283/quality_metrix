@@ -1,3 +1,6 @@
+import sys
+sys.path.append(r'Q:/sachuriga/Sachuriga_Python/quality_metrix')
+
 import spikeinterface as si
 import spikeinterface.extractors as se
 import spikeinterface.postprocessing as post
