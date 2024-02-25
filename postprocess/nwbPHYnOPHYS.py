@@ -9,6 +9,8 @@ from postprocess.Get_positions import load_positions
 from pynwb import NWBHDF5IO, NWBFile, TimeSeries
 from pynwb import NWBHDF5IO, NWBFile, TimeSeries
 import numpy as np
+from pynwb.ecephys import LFP, ElectricalSeries
+from pynwb import ProcessingModule
 
 from pynwb.behavior import (
     BehavioralEpochs,
@@ -22,13 +24,13 @@ from pynwb.behavior import (
 )
 
 def main():
-    path = "S:\Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-08_16-39-36_A_phy_k_manual"
+    path = "S:\\Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-08_16-39-36_A_phy_k_manual"
     sex = "F"
     ages = "P60"
     species = "Mus musculus"
     vedio_search_directory = "S:/Sachuriga/Ephys_Vedio/CR_CA1"
     path_to_save_nwbfile = "S:/Sachuriga/nwb"
-    nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory)
+    nwbPHYnOPHYS(path, sex, ages, species, vedio_search_directory, path_to_save_nwbfile)  # Added missing argument
 
 
 def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfile):
@@ -82,11 +84,12 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     nwbfile = NWBFile(
         session_description="Mouse exploring an open field",  # required
         identifier="sachuriga",  # required
-        session_start_time = datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("America/Los_Angeles")))  # required) 
-    
+        session_start_time=datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("America/Los_Angeles")))  # required) 
+
     position = Position(spatial_series=position_spatial_series)
-    behavior_module = nwbfile.create_processing_module(name="behavior", description="processed behavioral data")
+    behavior_module = ProcessingModule(name="behavior", description="processed behavioral data")
     behavior_module.add(position)
+    nwbfile.add_processing_module(behavior_module)
 
     nwbfile_path = fr"{path_to_save_nwbfile}/{path1[1]}.nwb"
     io = NWBHDF5IO(nwbfile_path, mode="w")

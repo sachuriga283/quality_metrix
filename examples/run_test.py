@@ -1,6 +1,6 @@
 import sys
 sys.path.append('Q:\sachuriga\Sachuriga_Python\quality_metrix')
-
+from postprocess.add_wfcor import add_wf_cor
 from preprocess.copy_file import copy_file
 from preprocess.load_data import load_data
 from postprocess.quality_metrix import qualitymetrix
@@ -23,7 +23,7 @@ def main():
     for file in sorted_files[-1:]:
         print(file)
         # qualitymetrix(file)
-        add_wf_cor(path)
+        add_wf_cor(file)
         nwbPHYnOPHYS(file,
                      sex,
                      age,

@@ -3,8 +3,6 @@ def main() -> object:
     path=" "
     load_data(path)
 
-def load_data(path):
-    print('y')
 
 def load_data(root_folder, file_suffix='_phy_k_manual'):
     """
