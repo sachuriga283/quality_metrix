@@ -28,7 +28,8 @@ def main():
                      sex,
                      age,
                      species,
-                     vedio_search_directory)
+                     vedio_search_directory,
+                     path_to_save_nwbfile)  # Add the missing argument "path_to_save_nwbfile"
        
         #copy_file(file, file +"_cured")
 

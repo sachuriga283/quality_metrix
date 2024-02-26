@@ -57,7 +57,7 @@ def load_positions(path,vedio_search_directory,folder_path,UD):
     f_time = v_time[np.where(v_state==3)[0]]
 
 
-    arr_with_new_col =  np.insert(positions , 0, f_time[:len(positions)], axis=1)
+    arr_with_new_col =  np.insert(positions , 0, f_time[:len(positions)], axis=1) # type: ignore
 
 
 
