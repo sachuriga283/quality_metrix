@@ -122,8 +122,10 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     nwbfile.electrodes.to_dataframe()
     all_table_region = nwbfile.create_electrode_table_region(region=list(range(electrode_counter)),  # reference row indices 0 to N-1
                                                              description="all electrodes")
-    lfp_time = np.load(fr"{folder1_path}/lfp_times.np.npy")
+    # Load the car LFP data
+    lfp_time = np.load(fr"{folder1_path}/lfp_times.npy")
     carlafp_data = np.load(fr"{folder1_path}/lfp_car.npy")
+
     lfp_car_electrical_series = ElectricalSeries(
        name="car_lfp",
        data=carlafp_data,
@@ -134,7 +136,8 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     ecephys_module = nwbfile.create_processing_module(name="lfp_car_ecephys", 
                                                      description="1-475 Hz bandpass filtered LFP data with car reference")
     ecephys_module.add(car_lfp)
-
+    
+    # Load the LFP data
     lfp_raw = np.load(fr"{folder1_path}/lfp.npy")
     lfp_electrical_series = ElectricalSeries(
         name="lfp",
