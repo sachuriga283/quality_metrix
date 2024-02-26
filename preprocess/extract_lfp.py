@@ -3,7 +3,6 @@ import spikeinterface.extractors as se
 import spikeinterface.postprocessing as post
 from spikeinterface.preprocessing import (bandpass_filter,
                                            common_reference,resample)
-import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
 import numpy as np
@@ -12,6 +11,8 @@ import math
 
 def main():
     print("main")
+    file=r'S:/Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-04_15-42-35_A'
+    extract_lfp(file)
 
 def extract_lfp(file):
     raw_path=file
@@ -50,16 +51,21 @@ def extract_lfp(file):
 
     pi.write_prb(f"{probe_name}.prb", probegroup, group_mode="by_shank")
 
-    rec = bandpass_filter(recording_prb, freq_min=1, freq_max=475, dtype='int16')
+    rec = bandpass_filter(recording, freq_min=1, freq_max=475, dtype='int16')
     rec_car = common_reference(rec, reference='global', operator='average', dtype='int16')
     lfp = resample(rec, 1000, margin_ms=100.0)
     lfp_car = resample(rec_car, 1000, margin_ms=100.0)
     lfp_times = down_sample(recording.get_times(),lfp.get_num_samples())
 
-    path_iron = Path(file + "_manual")
-    np.save(path_iron / 'lfp_times', lfp_times)
-    np.save(path_iron / 'lfp', lfp) # type: ignore
-    np.save(path_iron / 'lfp_car', lfp_car) # type: ignore
+    lfp= lfp.set_probe(probe, group_mode="by_shank")
+    lfp_car= lfp_car.set_probe(probe, group_mode="by_shank")
+    path_iron = Path('S:/Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-04_15-42-35_A_phy_k_manual')
+
+    np.save(path_iron / 'lfp_times.npy', lfp_times)
+    lfp1 = lfp.get_traces()
+    np.save(path_iron / 'lfp.npy', lfp1) # type: ignore
+    lfp1_car = lfp_car.get_traces()
+    np.save(path_iron / 'lfp_car.npy', lfp1_car) # type: ignore
 
 def down_sample(msg_cache,msg_n):
     import math
