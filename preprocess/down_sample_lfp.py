@@ -52,8 +52,19 @@ def down_sample_lfp(file_path,raw_path):
                   'CH59', 'CH54', 'CH51',
                   'CH53', 'CH58', 'CH64',
                   'CH47', 'CH36', 'CH56']
-    lfp_car_slice=lfp_car.channel_slice(channel_ids=channel_ids)
-    lfp_slice=lfp.channel_slice(channel_ids=channel_ids)
+    lfp_car_slice=lfp_car.channel_slice(channel_ids=['CH4', 'CH9', 'CH25',
+                                                     'CH17', 'CH11', 'CH2',
+                                                     'CH32', 'CH16', 'CH14',
+                                                     'CH59', 'CH54', 'CH51',
+                                                     'CH53', 'CH58', 'CH64',
+                                                     'CH47', 'CH36', 'CH56'])
+    
+    lfp_slice=lfp.channel_slice(channel_ids=['CH4', 'CH9', 'CH25',
+                                             'CH17', 'CH11', 'CH2',
+                                             'CH32', 'CH16', 'CH14',
+                                             'CH59', 'CH54', 'CH51',
+                                             'CH53', 'CH58', 'CH64',
+                                             'CH47', 'CH36', 'CH56'])
 
     print("get_traces() shape:")
     np_lfp_car=lfp_car_slice.get_traces()
