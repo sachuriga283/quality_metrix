@@ -57,7 +57,7 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     stream_name = 'Record Node 102#OE_FPGA_Acquisition_Board-101.Rhythm Data'
     folder_path = fr"{ECEPHY_DATA_PATH}/Record Node 102"
 
-    down_sample(path,ECEPHY_DATA_PATH)
+    down_sample_lfp(path,ECEPHY_DATA_PATH)
     folder_path = Path(folder_path)
 
     # Change the folder_path to the appropriate location in your system

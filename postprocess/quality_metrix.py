@@ -91,9 +91,6 @@ def qualitymetrix(path):
     
     lfp_times = down_sample(recording.get_times(),lfp.get_num_samples())
     np.save(path_iron / 'lfp_times.npy', lfp_times)
-
-    si.write_binary_recording(lfp_car, path_iron / 'lfp.bin')
-    si.write_binary_recording(rec_save, path_iron / 'recording_hf.bin', dtype='int16')
     print("complete adding template and cordinates aa")
     
 if __name__ == "__main__":
