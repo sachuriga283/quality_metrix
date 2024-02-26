@@ -31,8 +31,8 @@ def main():
 
     for file in sorted_files[-1:]:
         print(file)
-        qualitymetrix(file)
-        add_wf_cor(fr"{file}_manual")
+        #qualitymetrix(file)
+        #add_wf_cor(fr"{file}_manual")
         nwbPHYnOPHYS(fr"{file}_manual",
                      sex,
                      age,
