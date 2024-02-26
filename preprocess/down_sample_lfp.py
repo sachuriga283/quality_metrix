@@ -12,6 +12,7 @@ import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
 from preprocess.down_sample import down_sample # type: ignore
 import numpy as np
+import probeinterface as pi
 
 def main():
     print(main)
@@ -29,29 +30,38 @@ def down_sample_lfp(file_path,raw_path):
             stream_name = 'Record Node 101#Acquisition_Board-100.Rhythm Data'
             recordingo = se.read_openephys(raw_path, stream_name=stream_name, load_sync_timestamps=True)
 
-    #file_path = r'S:/Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-04_15-42-35_A_phy_k_manual/recording.dat'
-    sampling_frequency=30000
-    num_channels = 64  # Adjust according to your MATLAB dataset
-    dtype_int = 'int16'  # Adjust according to your MATLAB dataset
-    gain_to_uV = 0.195  # Adjust according to your MATLAB dataset
-    offset_to_uV = 0 
-    recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
-                            num_channels=num_channels, dtype=dtype_int,
-                            gain_to_uV=gain_to_uV, offset_to_uV=offset_to_uV)
 
-    recp = bandpass_filter(recording, freq_min=1, freq_max=475)
+    # from probeinterface import plotting
+    manufacturer = 'cambridgeneurotech'
+    probe_name = 'ASSY-236-F'
+    probe = pi.get_probe(manufacturer, probe_name)
+    print(probe)
+    # probe.wiring_to_device('cambridgeneurotech_mini-amp-64')
+    # map channels to device indices
+    mapping_to_device = [
+        # connector J2 TOP
+        41, 39, 38, 37, 35, 34, 33, 32, 29, 30, 28, 26, 25, 24, 22, 20,
+        46, 45, 44, 43, 42, 40, 36, 31, 27, 23, 21, 18, 19, 17, 16, 14,
+        # connector J1 BOTTOM
+        55, 53, 54, 52, 51, 50, 49, 48, 47, 15, 13, 12, 11, 9, 10, 8,
+        63, 62, 61, 60, 59, 58, 57, 56, 7, 6, 5, 4, 3, 2, 1, 0
+    ]
+
+    probe.set_device_channel_indices(mapping_to_device)
+    probe.to_dataframe(complete=True).loc[:, ["contact_ids", "shank_ids", "device_channel_indices"]]
+    probegroup = pi.ProbeGroup()
+    probegroup.add_probe(probe)
+
+    pi.write_prb(f"{probe_name}.prb", probegroup, group_mode="by_shank")
+    recording_prb = recordingo.set_probe(probe, group_mode="by_shank")
+    recp = bandpass_filter(recording_prb, freq_min=1, freq_max=475)
     rec_lfp_car = common_reference(recp, reference='global', 
                                operator='average', 
                                dtype='int16')
     lfp_car = resample(rec_lfp_car, resample_rate=1000, margin_ms=100.0)
     lfp = resample(recp, resample_rate=1000, margin_ms=100.0)
+    print(lfp_car.get_channel_ids())
     lfp_times = down_sample(recordingo.get_times(), lfp.get_num_samples())
-    channel_ids=['CH4', 'CH9', 'CH25',
-                  'CH17', 'CH11', 'CH2',
-                  'CH32', 'CH16', 'CH14',
-                  'CH59', 'CH54', 'CH51',
-                  'CH53', 'CH58', 'CH64',
-                  'CH47', 'CH36', 'CH56']
     lfp_car_slice=lfp_car.channel_slice(channel_ids=['CH4', 'CH9', 'CH25',
                                                      'CH17', 'CH11', 'CH2',
                                                      'CH32', 'CH16', 'CH14',

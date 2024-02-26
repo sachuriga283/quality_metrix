@@ -1,3 +1,4 @@
+from curses import meta
 import sys
 from tabnanny import verbose
 sys.path.append(r'Q:/sachuriga/Sachuriga_Python/quality_metrix')
@@ -57,11 +58,11 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     stream_name = 'Record Node 102#OE_FPGA_Acquisition_Board-101.Rhythm Data'
     folder_path = fr"{ECEPHY_DATA_PATH}/Record Node 102"
 
-    down_sample_lfp(path,ECEPHY_DATA_PATH)
+    down_sample_lfp(fr"{path}",fr"{ECEPHY_DATA_PATH}")
     folder_path = Path(folder_path)
 
     # Change the folder_path to the appropriate location in your system
-    interface_ophys = OpenEphysRecordingInterface(folder_path=folder_path,stream_name=stream_name)
+    interface_ophys = OpenEphysRecordingInterface(folder_path=folder_path,stream_name=stream_name,es_key="lfp_raw")
 
     # Extract what metadata we can from the source files
     folder1_path = f"{path}"  # Change the folder_path to the location of the data in your system
@@ -76,7 +77,8 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
 
     converter = ConverterPipe(data_interfaces=[interface_ophys, interface_phy,], verbose=False)
     # Extract what metadata we can from the source files
-    
+    metadata = converter.get_metadata()
+    print(metadata)
     arr_with_new_col = load_positions(path,vedio_search_directory,folder_path,UD)
     print(arr_with_new_col.shape)
     print(arr_with_new_col[:,[1,2]])
@@ -93,10 +95,11 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
         identifier="sachuriga",  # required
         session_start_time=datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("America/Los_Angeles")))  # required)
     
-    device = nwbfile.create_device(name="multi-shanks", 
-                                   description="cambridgeneurotech_mini-amp-64-ASSY-236-F", 
-                                   manufacturer="cambridgeneurotech") 
-    
+    # device = nwbfile.create_device(name="multi-shanks", 
+    #                                description="cambridgeneurotech_mini-amp-64-ASSY-236-F", 
+    #                                manufacturer="cambridgeneurotech") 
+
+    device=metadata["general_devices"]
     nwbfile.add_electrode_column(name="label", description="label of electrode")
     nshanks = 6
     electrode_counter = 0
@@ -122,6 +125,8 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     nwbfile.electrodes.to_dataframe()
     all_table_region = nwbfile.create_electrode_table_region(region=list(range(electrode_counter)),  # reference row indices 0 to N-1
                                                              description="all electrodes")
+    all_table_region1 = nwbfile.create_electrode_table_region(region=list(range(electrode_counter)),  # reference row indices 0 to N-1
+                                                             description="all electrodes1")
     # Load the car LFP data
     lfp_time = np.load(fr"{folder1_path}/lfp_times.npy")
     carlafp_data = np.load(fr"{folder1_path}/lfp_car.npy")
@@ -136,13 +141,13 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     ecephys_module = nwbfile.create_processing_module(name="lfp_car_ecephys", 
                                                      description="1-475 Hz bandpass filtered LFP data with car reference")
     ecephys_module.add(car_lfp)
-    
+
     # Load the LFP data
     lfp_raw = np.load(fr"{folder1_path}/lfp.npy")
     lfp_electrical_series = ElectricalSeries(
         name="lfp",
         data=lfp_raw,
-        electrodes=all_table_region,
+        electrodes=all_table_region1,
         starting_time=lfp_time[0],  # timestamp of the first sample in seconds relative to the session start time
         rate = 1000.0),  # in Hz)
     lfp = LFP(electrical_series=lfp_electrical_series)
