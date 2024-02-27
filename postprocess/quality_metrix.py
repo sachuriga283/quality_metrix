@@ -80,7 +80,7 @@ def qualitymetrix(path):
     qm_params = sqm.get_default_qm_params()
     qm_params["nn_isolation"]["max_spikes"]=10000
     sqm.compute_quality_metrics(waveform_extractor=wf, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
-
+    print("completet!!!!_quality_metrix_part")
     path_iron = Path(path + "_manual")
     sex.export_to_phy(waveform_extractor=wf,
                       output_folder = path_iron,
@@ -88,10 +88,6 @@ def qualitymetrix(path):
                       copy_binary=True)
 
     wf.save(Path(path + "_manual/waveforms"), format='binary')
-    
-    lfp_times = down_sample(recording.get_times(),lfp.get_num_samples())
-    np.save(path_iron / 'lfp_times.npy', lfp_times)
-    print("complete adding template and cordinates aa")
-    
+    print("completet!!!!_export_to_phy_part")
 if __name__ == "__main__":
     main()
