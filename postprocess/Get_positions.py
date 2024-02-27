@@ -8,7 +8,6 @@ from pathlib import Path
 def main():
     vedio_search_directory = 'S:/Sachuriga/Ephys_Vedio/CR_CA1/'
     folder_path = fr"S:/Sachuriga/Ephys_Recording/CR_CA1/65410/65410_2023-12-04_13-38-02_A/Record Node 102/"
-    path = 
     dlc =  load_positions(path,vedio_search_directory,folder_path,UD)
 
 def load_positions(path,vedio_search_directory,folder_path,UD):
@@ -49,9 +48,11 @@ def load_positions(path,vedio_search_directory,folder_path,UD):
 
     df = pd.read_csv(dlc_path)
     pos = df[['DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000',
-            'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.1',
-            'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.12',
-            'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.13']]
+                'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.1',
+                'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.12',
+                'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.13',
+                'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.24',
+                'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.25']]
     positions = np.float32(pos[3:].to_numpy())
 
     matching_files = glob.glob(search_pattern1,recursive=True)
@@ -100,5 +101,36 @@ def calc_head_direction(positions):
 
     hd = np.remainder(np.arctan2(y2-y1, x2-x1) * 180 / np.pi + 180, 360)
     return hd
+
+def moving_direction(pos, window_points=[1, 1], step=1):
+    newPos = pos.copy()
+    nBefore, nAfter = window_points
+
+    if np.isnan(nBefore) or np.isnan(nAfter) or np.isnan(step):
+        raise ValueError("Either 'windowPoints' or 'step' contains NaN values. This is not supported")
+
+    num_samples = pos.shape[0]
+    mdInd = np.arange(nBefore, num_samples - nAfter, step)
+
+    kernel = np.concatenate([np.ones(nBefore)/nBefore, [0], -np.ones(nAfter)/nAfter])
+
+    dropped_samples = np.setdiff1d(np.arange(num_samples), mdInd)
+    newPos[dropped_samples, 1:] = np.nan
+
+    if pos.shape[1] > 3:
+        md = np.full((num_samples, 2), np.nan)
+        md[mdInd, 0] = calc_direction(pos[:, 1], pos[:, 2], kernel, mdInd)
+        md[mdInd, 1] = calc_direction(pos[:, 3], pos[:, 4], kernel, mdInd)
+    else:
+        md = np.full((num_samples, 1), np.nan)
+        md[mdInd, 0] = calc_direction(pos[:, 1], pos[:, 2], kernel, mdInd)
+
+    return md, newPos
+
+def calc_direction(x, y, kernel, ind):
+    X = np.convolve(x, kernel, 'same')[ind]
+    Y = np.convolve(y, kernel, 'same')[ind]
+    return np.mod(np.degrees(np.arctan2(Y, X)), 360)
+
 if __name__== "__main__":
     main()

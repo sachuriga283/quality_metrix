@@ -1,39 +1,15 @@
-import sys
-sys.path.append('Q:\sachuriga\Sachuriga_Python\quality_metrix')
-from postprocess.add_wfcor import add_wf_cor
-from preprocess.copy_file import copy_file
-from preprocess.load_data import load_data
-from postprocess.quality_metrix import qualitymetrix
-from postprocess.nwbPHYnOPHYS import nwbPHYnOPHYS
+import pandas as pd
+import numpy as np
 
-sex = "F"
-ID = "65409"
-age = "P45+"
-species = "Mus musculus"
-vedio_search_directory = 'S:/Sachuriga/Ephys_Vedio/CR_CA1/'
+dlc_path=r"S:/Sachuriga/Ephys_Vedio/CR_CA1/65590_Open_Field_50Hz_B2024-02-252024-02-25T14_41_31DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000_sk_filtered.csv"
 
-def main():
-    #getting sorted files
-    folder_path = fr'S:/Sachuriga/Ephys_Recording/CR_CA1/{ID}/'
-    sorted_files = load_data(folder_path, file_suffix='_phy_k')
+df = pd.read_csv(dlc_path)
+#print(df)
+pos = df[['DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000',
+        'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.1',
+        'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.12',
+        'DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000.13']]
+positions = np.float32(pos[3:].to_numpy())
 
-    #for file in sorted_files:
-    #quality_metrix and export to new phy folder
-
-    for file in sorted_files[-1:]:
-        print(file)
-        # qualitymetrix(file)
-        add_wf_cor(file)
-        nwbPHYnOPHYS(file,
-                     sex,
-                     age,
-                     species,
-                     vedio_search_directory,
-                     path_to_save_nwbfile)  # Add the missing argument "path_to_save_nwbfile"
-       
-        #copy_file(file, file +"_cured")
-
-    print("completet!!!!")
-
-if __name__== "__main__":
-    main()
+print(positions)
+print(df['DLC_dlcrnetms5_CR_implant_DLCnetNov30shuffle3_600000'].shape)

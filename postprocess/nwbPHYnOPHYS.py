@@ -7,7 +7,7 @@ from pathlib import Path
 from neuroconv.datainterfaces import PhySortingInterface
 from neuroconv.datainterfaces import OpenEphysRecordingInterface
 from neuroconv import ConverterPipe
-from postprocess.Get_positions import load_positions
+from postprocess.Get_positions import load_positions,calc_head_direction
 from pynwb import NWBHDF5IO, NWBFile
 from pynwb import NWBHDF5IO, NWBFile
 from dateutil.tz import tzlocal
@@ -16,6 +16,7 @@ from preprocess.down_sample_lfp import down_sample_lfp,add_lfp2nwb
 from pynwb.behavior import (
     Position,
     SpatialSeries,
+    CompassDirection
 )
 
 def main():
@@ -68,28 +69,59 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     metadata = converter.get_metadata()
     print(metadata)
     arr_with_new_col = load_positions(path,vedio_search_directory,folder_path,UD)
-    print(arr_with_new_col.shape)
-    print(arr_with_new_col[:,[1,2]])
-    
+    print(f"{arr_with_new_col.shape[1]} output the shape of the array")
+
+    snout2neck = arr_with_new_col[:,[0,1,2,3,4]]
+    neck2back4 = arr_with_new_col[:,[0,3,4,5,6]]
+
+    print(f"snout2neck: {snout2neck}")  
+    print(f"neck2back4: {neck2back4}")
+
+    hd=calc_head_direction(snout2neck)
+    bd=calc_head_direction(neck2back4)
+
+    print(f"Head Directions: {hd}")
+    print(f"Body Directions: {bd}")
+
     position_spatial_series = SpatialSeries(
         name="SpatialSeries",
         description="Position (x, y) in an open field.",
         data=arr_with_new_col[:,[1,2]],
         timestamps=arr_with_new_col[:,0],
-        reference_frame="(0,0) is top left corner",)
+        reference_frame="(0,0) is top left corner")
     
+    hd_direction_spatial_series = SpatialSeries(name="SpatialSeries",
+                                             description="View angle of the subject measured in radians.",
+                                             data=hd,
+                                             timestamps=snout2neck[:,0],
+                                             reference_frame="straight ahead",
+                                             unit="radians",)
+    
+    bd_direction_spatial_series = SpatialSeries(name="SpatialSeries",
+                                             description="View angle of the subject measured in radians.",
+                                             data=bd,
+                                             timestamps=neck2back4[:,0],
+                                             reference_frame="straight back",
+                                             unit="radians",)
+       
+
     nwbfile = NWBFile(
         session_description="Mouse exploring an open field",  # required
         identifier="sachuriga",  # required
         session_start_time=datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("America/Los_Angeles")))  # required)
-    behavior_module = nwbfile.create_processing_module(name="DLC", 
-                                                        description="position")
+    behavior_module = nwbfile.create_processing_module(name="Behavioral data", 
+                                                        description="position, head direction, and body direction of the mouse in an open field.")
     #ehavior_module = ProcessingModule(name="behavior", description="processed behavioral data")
-    position = Position(spatial_series=position_spatial_series)
+    position = Position(spatial_series=position_spatial_series, name='Position in pixel')
     behavior_module.add(position)
-    #position = Position(spatial_series=position_spatial_series)
-    
+    hd_direction = CompassDirection(spatial_series=hd_direction_spatial_series, name="Head(snout2neck)_Direction")
+    bd_direction = CompassDirection(spatial_series=bd_direction_spatial_series, name="Body(neck2back4)_Direction")
 
+    behavior_module.add(hd_direction)
+    behavior_module.add(bd_direction)
+    print(behavior_module)
+
+    #position = Position(spatial_series=position_spatial_series)
     nwbfile_path = fr"{path_to_save_nwbfile}/{path1[1]}.nwb"
     io = NWBHDF5IO(nwbfile_path, mode="w")
     io.write(nwbfile)
