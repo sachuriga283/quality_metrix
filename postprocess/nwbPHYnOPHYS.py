@@ -76,8 +76,8 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
         description="Position (x, y) in an open field.",
         data=arr_with_new_col[:,[1,2]],
         timestamps=arr_with_new_col[:,0],
-        reference_frame="(0,0) is top left corner",
-    )
+        reference_frame="(0,0) is top left corner",)
+    
     nwbfile = NWBFile(
         session_description="Mouse exploring an open field",  # required
         identifier="sachuriga",  # required
