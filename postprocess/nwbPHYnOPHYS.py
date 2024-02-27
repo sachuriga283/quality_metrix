@@ -7,7 +7,7 @@ from pathlib import Path
 from neuroconv.datainterfaces import PhySortingInterface
 from neuroconv.datainterfaces import OpenEphysRecordingInterface
 from neuroconv import ConverterPipe
-from postprocess.Get_positions import load_positions,calc_head_direction
+from postprocess.Get_positions import load_positions,calc_head_direction,moving_direction
 from pynwb import NWBHDF5IO, NWBFile
 from pynwb import NWBHDF5IO, NWBFile
 from dateutil.tz import tzlocal
@@ -79,7 +79,9 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
 
     hd=calc_head_direction(snout2neck)
     bd=calc_head_direction(neck2back4)
-
+    md,new_pos = moving_direction(arr_with_new_col )
+    print(f"position: {new_pos}")
+    print(f"moving Directions: {md.shape}")
     print(f"Head Directions: {hd}")
     print(f"Body Directions: {bd}")
 
@@ -103,7 +105,13 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
                                              timestamps=neck2back4[:,0],
                                              reference_frame="straight back",
                                              unit="radians",)
-       
+
+    md_direction_spatial_series = SpatialSeries(name="SpatialSeries",
+                                             description="moving angle of the subject measured in radians.",
+                                             data=md,
+                                             timestamps=neck2back4[:,0],
+                                             reference_frame="moving direction",
+                                             unit="radians",)   
 
     nwbfile = NWBFile(
         session_description="Mouse exploring an open field",  # required
@@ -116,9 +124,11 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     behavior_module.add(position)
     hd_direction = CompassDirection(spatial_series=hd_direction_spatial_series, name="Head(snout2neck)_Direction")
     bd_direction = CompassDirection(spatial_series=bd_direction_spatial_series, name="Body(neck2back4)_Direction")
+    md_direction = CompassDirection(spatial_series=md_direction_spatial_series, name="Moving_Direction")
 
     behavior_module.add(hd_direction)
     behavior_module.add(bd_direction)
+    behavior_module.add(md_direction)
     print(behavior_module)
 
     #position = Position(spatial_series=position_spatial_series)
@@ -145,7 +155,7 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     
     #metadata["NWBFile"].update(session_start_time=session_start_time)
     converter.run_conversion(nwbfile_path=nwbfile_path, metadata=metadata)
-    channel2selec = [3, 8, 24, 16, 10, 1,31, 15, 31,58,53, 50,52,4,63,48,45,55]
+    channel2selec = [3, 8, 24, 16, 10, 1, 31, 15, 31, 58, 53, 50, 52, 4, 63, 48, 45, 55]
     add_lfp2nwb(nwbfile_path,channel2selec,folder1_path)
 
 if __name__== "__main__":
