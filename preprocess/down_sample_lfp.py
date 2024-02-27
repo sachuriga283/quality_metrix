@@ -1,19 +1,22 @@
 import sys
-from tabnanny import verbose
 sys.path.append(r'Q:/sachuriga/Sachuriga_Python/quality_metrix')
 
-import spikeinterface as si
 import spikeinterface.extractors as se
-import spikeinterface.postprocessing as post
 from spikeinterface.preprocessing import (bandpass_filter,
                                            common_reference,resample)
-import spikeinterface.exporters as sex
-import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
 from preprocess.down_sample import down_sample # type: ignore
 import numpy as np
 import probeinterface as pi
-
+from pathlib import Path
+#from postprocess.Get_positions import load_positions
+from pynwb import NWBHDF5IO
+from pynwb import NWBHDF5IO
+import numpy as np
+from pynwb.ecephys import LFP, ElectricalSeries
+#from preprocess.down_sample_lfp import down_sample_lfp
+import numpy as np
+import pandas as pd
 def main():
     print(main)
 
@@ -82,11 +85,58 @@ def down_sample_lfp(file_path,raw_path):
     path_iron = Path(file_path)
     np.save(path_iron / 'lfp_times.npy', lfp_times) # type: ignore
     np.save(path_iron / 'lfp_car.npy',  np_lfp_car)
-    np.save(path_iron / 'lfp.npy', np_lfp)  # Save the LFP data
+    np.save(path_iron / 'lfp_raw.npy', np_lfp)  # Save the LFP data
 
     print(f"shape {np_lfp.shape}")
     print(f"descriptions{lfp.get_binary_description()}")
     print(np_lfp)
+
+def add_lfp2nwb(filename,channel2selec,folder1_path):
+
+    with NWBHDF5IO(filename, "r+") as io:
+        read_nwbfile = io.read()
+        region=channel2selec
+        # create a TimeSeries and add it to the file under the acquisition group
+        #device1 = read_nwbfile.add_device(device)
+        device1 = read_nwbfile.electrodes.to_dataframe()
+        regions=read_nwbfile.create_electrode_table_region(region, "a", name='electrodes')
+        print(device1)
+        print(regions.to_dataframe())
+
+        lfp_times = np.load(fr"{folder1_path}/spike_times.npy")
+        lfp_raw = np.load(fr"{folder1_path}/spike_times.npy")
+        lfp_car = np.load(fr"{folder1_path}/spike_times.npy")
+        lfp_electrical_series = ElectricalSeries(
+            name="lfp_raw",
+            data=lfp_raw,
+            electrodes=regions,
+            starting_time=lfp_times[0],
+            rate=1000.0)
+        lfp = LFP(electrical_series=lfp_electrical_series)
+        ecephys_module = read_nwbfile.create_processing_module(name="lfp_raw", 
+                                                        description="1-475Hz, 1000Hz sampling rate, raw extracellular electrophysiology data")
+        ecephys_module.add(lfp)
+        
+        #np_lfp = read_nwbfile.modules["ecephys_raw"].data_interfaces['LFP']['lfp_raw']
+        #ch = np_lfp.electrodes.to_dataframe()['channel_name'].tolist()
+        #df = pd.DataFrame(np_lfp.data, columns = ch)
+        #print(df)
+        ecephys_car_module = read_nwbfile.create_processing_module(name="lfp_car", 
+                                                        description="1-475Hz, 1000Hz sampling rate, common average reference extracellular electrophysiology data")
+
+        lfp_car_electrical_series = ElectricalSeries(
+            name="lfp_car",
+            data=lfp_car,
+            electrodes=regions,
+            starting_time=lfp_times[0],
+            rate=1000.0)
+        lfp_car = LFP(electrical_series=lfp_car_electrical_series)
+        ecephys_car_module.add(lfp_car)
+        
+        #np_lfp_car = read_nwbfile.modules["ecephys_car"].data_interfaces['LFP']['lfp_car']
+        #ch_car = np_lfp_car.electrodes.to_dataframe()['channel_name'].tolist()
+        #df = pd.DataFrame(np_lfp.data, columns = ch_car)
+        io.write(read_nwbfile)
 
 if __name__== "__main__":
     main()

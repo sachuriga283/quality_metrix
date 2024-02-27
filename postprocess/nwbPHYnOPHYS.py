@@ -1,32 +1,20 @@
-from curses import meta
 import sys
-from tabnanny import verbose
 sys.path.append(r'Q:/sachuriga/Sachuriga_Python/quality_metrix')
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from dateutil import tz
 from pathlib import Path
 from neuroconv.datainterfaces import PhySortingInterface
 from neuroconv.datainterfaces import OpenEphysRecordingInterface
 from neuroconv import ConverterPipe
 from postprocess.Get_positions import load_positions
-from pynwb import NWBHDF5IO, NWBFile, TimeSeries
-from pynwb import NWBHDF5IO, NWBFile, TimeSeries
-import numpy as np
-from pynwb.ecephys import LFP, ElectricalSeries
-from pynwb import ProcessingModule
+from pynwb import NWBHDF5IO, NWBFile
+from pynwb import NWBHDF5IO, NWBFile
 from dateutil.tz import tzlocal
-from preprocess.down_sample_lfp import down_sample_lfp
+from preprocess.down_sample_lfp import down_sample_lfp,add_lfp2nwb
 
 from pynwb.behavior import (
-    BehavioralEpochs,
-    BehavioralEvents,
-    BehavioralTimeSeries,
-    CompassDirection,
-    EyeTracking,
     Position,
-    PupilTracking,
     SpatialSeries,
 )
 
@@ -82,7 +70,7 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     arr_with_new_col = load_positions(path,vedio_search_directory,folder_path,UD)
     print(arr_with_new_col.shape)
     print(arr_with_new_col[:,[1,2]])
-
+    
     position_spatial_series = SpatialSeries(
         name="SpatialSeries",
         description="Position (x, y) in an open field.",
@@ -94,71 +82,13 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
         session_description="Mouse exploring an open field",  # required
         identifier="sachuriga",  # required
         session_start_time=datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("America/Los_Angeles")))  # required)
-    
-    # device = nwbfile.create_device(name="multi-shanks", 
-    #                                description="cambridgeneurotech_mini-amp-64-ASSY-236-F", 
-    #                                manufacturer="cambridgeneurotech") 
-
-    device=metadata["general_devices"]
-    nwbfile.add_electrode_column(name="label", description="label of electrode")
-    nshanks = 6
-    electrode_counter = 0
-    nchannels_per_shank = 3
-
-    for ishank in range(nshanks):
-    # create an electrode group for this shank
-        electrode_group = nwbfile.create_electrode_group(
-        name="shank{}".format(ishank),
-        description="electrode group for shank {}".format(ishank),
-        device=device,
-        location="hipocampus")
-        print(f"now shank {ishank} is created")
-        # add electrodes to the electrode table
-        for ielec in range(nchannels_per_shank):
-            nwbfile.add_electrode(
-                group=electrode_group,
-                label="shank{}elec{}".format(ishank, ielec),
-                location="hipocampus")
-            electrode_counter += 1
-
-    print(f"elec numbers{electrode_counter} shank_nums {range(nshanks)}")
-    nwbfile.electrodes.to_dataframe()
-    all_table_region = nwbfile.create_electrode_table_region(region=list(range(electrode_counter)),  # reference row indices 0 to N-1
-                                                             description="all electrodes")
-    all_table_region1 = nwbfile.create_electrode_table_region(region=list(range(electrode_counter)),  # reference row indices 0 to N-1
-                                                             description="all electrodes1")
-    # Load the car LFP data
-    lfp_time = np.load(fr"{folder1_path}/lfp_times.npy")
-    carlafp_data = np.load(fr"{folder1_path}/lfp_car.npy")
-
-    lfp_car_electrical_series = ElectricalSeries(
-       name="car_lfp",
-       data=carlafp_data,
-       electrodes=all_table_region,
-       starting_time=lfp_time [0],  # timestamp of the first sample in seconds relative to the session start time
-       rate = 1000.0),  # in Hz)
-    car_lfp = LFP(electrical_series=lfp_car_electrical_series)
-    ecephys_module = nwbfile.create_processing_module(name="lfp_car_ecephys", 
-                                                     description="1-475 Hz bandpass filtered LFP data with car reference")
-    ecephys_module.add(car_lfp)
-
-    # Load the LFP data
-    lfp_raw = np.load(fr"{folder1_path}/lfp.npy")
-    lfp_electrical_series = ElectricalSeries(
-        name="lfp",
-        data=lfp_raw,
-        electrodes=all_table_region1,
-        starting_time=lfp_time[0],  # timestamp of the first sample in seconds relative to the session start time
-        rate = 1000.0),  # in Hz)
-    lfp = LFP(electrical_series=lfp_electrical_series)
-    ecephys_lfp = nwbfile.create_processing_module(name="ecephys", 
-                                                     description="1-475 Hz bandpass filtered LFP data")
-    ecephys_lfp.add(lfp)
-
+    behavior_module = nwbfile.create_processing_module(name="DLC", 
+                                                        description="position")
+    #ehavior_module = ProcessingModule(name="behavior", description="processed behavioral data")
     position = Position(spatial_series=position_spatial_series)
-    behavior_module = ProcessingModule(name="behavior", description="processed behavioral data")
     behavior_module.add(position)
-    nwbfile.add_processing_module(behavior_module)
+    #position = Position(spatial_series=position_spatial_series)
+    
 
     nwbfile_path = fr"{path_to_save_nwbfile}/{path1[1]}.nwb"
     io = NWBHDF5IO(nwbfile_path, mode="w")
@@ -180,9 +110,11 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     print(metadata)
     # For data provenance we add the time zone information to the conversionSS
     session_start_time = datetime.now(tzlocal())
-
+    
     #metadata["NWBFile"].update(session_start_time=session_start_time)
     converter.run_conversion(nwbfile_path=nwbfile_path, metadata=metadata)
+    channel2selec = [3, 8, 24, 16, 10, 1,31, 15, 31,58,53, 50,52,4,63,48,45,55]
+    add_lfp2nwb(nwbfile_path,channel2selec,folder1_path)
 
 if __name__== "__main__":
     main()
