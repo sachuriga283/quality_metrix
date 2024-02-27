@@ -39,7 +39,7 @@ def main():
                      vedio_search_directory,
                      path_to_save_nwbfile = path_save)
         
-    print(f"completet!!!!{file}\ncreated new phy folder {file}_manual \ncreated nwb file at {path_save} for {ID} {age} {species}")
+        print(f"completet!!!!{file}\ncreated new phy folder {file}_manual \ncreated nwb file at {path_save} for {ID} {age} {species}\n\n\n\n")
 
 if __name__== "__main__":
     main()
