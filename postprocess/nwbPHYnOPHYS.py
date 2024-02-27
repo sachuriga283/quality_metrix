@@ -18,7 +18,7 @@ from pynwb.behavior import (
     SpatialSeries,
     CompassDirection
 )
-
+import numpy as np
 def main():
     path = "S:\\Sachuriga/Ephys_Recording/CR_CA1/65409/65409_2023-12-08_16-39-36_A_phy_k_manual"
     sex = "F"
@@ -55,12 +55,12 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
 
     # Extract what metadata we can from the source files
     folder1_path = f"{path}"  # Change the folder_path to the location of the data in your system
-
-    #sample_num = np.load(fr"{folder1_path}/spike_times.npy")
-    #timestemp = np.load(fr'{folder_path}\experiment1\recording1\continuous\OE_FPGA_Acquisition_Board-101.Rhythm Data/sample_numbers.npy')
-    print(folder_path)
-    #time_spk = timestemp[sample_num]
-    #np.save(fr"{folder1_path}/spike_times.npy",time_spk)
+    if UD[0] == "65410":
+        sample_num = np.load(fr"{folder1_path}/spike_times.npy")
+        timestemp = np.load(fr'{folder_path}\experiment1\recording1\continuous\OE_FPGA_Acquisition_Board-101.Rhythm Data/sample_numbers.npy')
+        print(folder_path)
+        time_spk = timestemp[sample_num]
+        np.save(fr"{folder1_path}/spike_times.npy",time_spk)
     interface_phy = PhySortingInterface(folder_path=folder1_path, verbose=False)
     # For data provenance we add the time zone information to the conversionSS
 
