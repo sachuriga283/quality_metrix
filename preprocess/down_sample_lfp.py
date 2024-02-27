@@ -103,9 +103,9 @@ def add_lfp2nwb(filename,channel2selec,folder1_path):
         print(device1)
         print(regions.to_dataframe())
 
-        lfp_times = np.load(fr"{folder1_path}/spike_times.npy")
-        lfp_raw = np.load(fr"{folder1_path}/spike_raw.npy")
-        lfp_car = np.load(fr"{folder1_path}/spike_car.npy")
+        lfp_times = np.load(fr"{folder1_path}/lfp_times.npy")
+        lfp_raw = np.load(fr"{folder1_path}/lfp_raw.npy")
+        lfp_car = np.load(fr"{folder1_path}/lfp_car.npy")
         lfp_electrical_series = ElectricalSeries(
             name="lfp_raw",
             data=lfp_raw,
