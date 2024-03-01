@@ -10,7 +10,6 @@ from pathlib import Path
 
 def main() -> object:
     """
-
     :rtype: object
     """
     print("main")
