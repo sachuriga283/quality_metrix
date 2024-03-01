@@ -1,9 +1,12 @@
 from setuptools import setup, find_packages
 
 def read_requirements():
-    with open('requirements.txt') as req:
-        return req.read().splitlines()
-
+    try:
+        with open('requirements.txt', encoding='utf-8-sig') as req:
+            return [line.strip() for line in req if line.strip() and not line.startswith('#')]
+    except UnicodeDecodeError:
+        with open('requirements.txt', encoding='utf-16') as req:
+            return [line.strip() for line in req if line.strip() and not line.startswith('#')]
 
 setup(
     name='nwb4fprobe',
