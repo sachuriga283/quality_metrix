@@ -65,12 +65,13 @@ def qualitymetrix(path):
                               sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
     
     #get potential merging sorting objects
+    print("processing potential merge...")
     sort_merge = get_potential_merge(sorting, wf)
     wfm = si.extract_waveforms(rec_save, sort_merge, folder='C:/temp_waveform/', overwrite=True, 
                               sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
 
 
-    spike_locations = post.compute_unit_locations(waveform_extractor=wf,
+    spike_locations = post.compute_unit_locations(waveform_extractor=wfm,
                                                    method= 'monopolar_triangulation',
                                                   radius_um=50.)
 
