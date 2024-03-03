@@ -1,4 +1,5 @@
 from pathlib import Path
+import string
 import sys
 base_path = Path("Q:/Sachuriga/Sachuriga_Python")
 base_data_folder = Path("S:/Sachuriga/")
@@ -20,7 +21,7 @@ age = "P45+"
 species = "Mus musculus"
 vedio_search_directory = base_data_folder/fr"Ephys_Vedio/CR_CA1/"
 path_save = base_data_folder/fr"nwb"
-
+counter = 0
 def main():
     
     #getting sorted files
@@ -38,8 +39,9 @@ def main():
                      species,
                      vedio_search_directory,
                      path_to_save_nwbfile = path_save)
-        
-        print(f"completet!!!!{file}\ncreated new phy folder {file}_manual \ncreated nwb file at {path_save} for {ID} {age} {species}\n\n\n\n")
+        counter += 1
+        percent = counter/len(sorted_files)
+        print(f"{percent} % completet!!!!{file}\ncreated new phy folder {file}_manual \ncreated nwb file at {path_save}for {ID} {age} {species}\n\n\n\n")
 
 if __name__== "__main__":
     main()
