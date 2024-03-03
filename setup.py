@@ -10,7 +10,7 @@ def read_requirements():
 
 setup(
     name='nwb4fprobe',
-    version='0.1.7',
+    version='0.1.9',
     url='https://github.com/sachuriga283/quality_metrix.git',
     author='sachuriga283',
     author_email='sachuriga.sachuriga@ntnu.no',

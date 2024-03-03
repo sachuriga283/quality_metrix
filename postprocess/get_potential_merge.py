@@ -23,8 +23,11 @@ def get_potential_merge(sorting:si.BaseSorting, wf:si.WaveformExtractor) -> Tupl
                                   firing_contamination_balance=1.5)
     
 
-    clean_sorting = MergeUnitsSorting(parent_sorting=sorting, units_to_merge=merges, properties_policy='keep', delta_time_ms=0.4)
-
+    if merges:  # This will be False if units_to_merge is an empty list
+        clean_sorting = MergeUnitsSorting(parent_sorting=sorting, units_to_merge=merges, properties_policy='keep', delta_time_ms=0.4)
+    else:
+        clean_sorting=sorting
+    # handle the case when there are no units to merge
     return clean_sorting
 
 if __name__ == "__main__":
