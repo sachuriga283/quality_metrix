@@ -65,12 +65,14 @@ def qualitymetrix(path):
                               sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
     
     #get potential merging sorting objects
+    print("processing potential merge...\n")
+    
     sort_merge = get_potential_merge(sorting, wf)
     wfm = si.extract_waveforms(rec_save, sort_merge, folder='C:/temp_waveform/', overwrite=True, 
                               sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
 
 
-    spike_locations = post.compute_unit_locations(waveform_extractor=wf,
+    spike_locations = post.compute_unit_locations(waveform_extractor=wfm,
                                                    method= 'monopolar_triangulation',
                                                   radius_um=50.)
 
@@ -80,7 +82,8 @@ def qualitymetrix(path):
     qm_params = sqm.get_default_qm_params()
     qm_params["nn_isolation"]["max_spikes"]=10000
     sqm.compute_quality_metrics(waveform_extractor=wfm, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
-    print("completet!!!!_quality_metrix_part")
+    print("completet!!!!automerge & quality_metrix_part")
+
     path_iron = Path(path + "_manual")
     sex.export_to_phy(waveform_extractor=wfm,
                       output_folder = path_iron,
