@@ -80,7 +80,8 @@ def qualitymetrix(path):
     qm_params = sqm.get_default_qm_params()
     qm_params["nn_isolation"]["max_spikes"]=10000
     sqm.compute_quality_metrics(waveform_extractor=wfm, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
-    print("completet!!!!_quality_metrix_part")
+    print("completet!!!!automerge & quality_metrix_part")
+
     path_iron = Path(path + "_manual")
     sex.export_to_phy(waveform_extractor=wfm,
                       output_folder = path_iron,

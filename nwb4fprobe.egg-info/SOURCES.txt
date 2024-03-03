@@ -9,6 +9,7 @@ nwb4fprobe.egg-info/top_level.txt
 postprocess/Get_positions.py
 postprocess/__init__.py
 postprocess/add_wfcor.py
+postprocess/get_potential_merge.py
 postprocess/nwbPHYnOPHYS.py
 postprocess/quality_metrix.py
 preprocess/__init__.py

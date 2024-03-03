@@ -1,17 +1,15 @@
 import spikeinterface as si
 import spikeinterface.extractors as se
 import spikeinterface.postprocessing as post
+from postprocess.get_potential_merge import get_potential_merge
 from spikeinterface.preprocessing import (bandpass_filter,
-                                           common_reference,resample)
+                                           common_reference)
 import spikeinterface.exporters as sex
 import spikeinterface.qualitymetrics as sqm
 from pathlib import Path
-from preprocess.down_sample import down_sample
-import numpy as np
 
 def main() -> object:
     """
-
     :rtype: object
     """
     print("main")
@@ -65,6 +63,11 @@ def qualitymetrix(path):
 
     wf = si.extract_waveforms(rec_save, sorting, folder='C:/temp_waveform/', overwrite=True, 
                               sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
+    
+    #get potential merging sorting objects
+    sort_merge = get_potential_merge(sorting, wf)
+    wfm = si.extract_waveforms(rec_save, sort_merge, folder='C:/temp_waveform/', overwrite=True, 
+                              sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
 
 
     spike_locations = post.compute_unit_locations(waveform_extractor=wf,
@@ -72,22 +75,19 @@ def qualitymetrix(path):
                                                   radius_um=50.)
 
     from spikeinterface.postprocessing import compute_principal_components,compute_template_metrics
-
-
-    compute_principal_components(waveform_extractor=wf,n_components=3,whiten=True,mode='by_channel_local',dtype='float64')
-    
-    compute_template_metrics(wf)
+    compute_principal_components(waveform_extractor=wfm,n_components=3,whiten=True,mode='by_channel_local',dtype='float64')
+    compute_template_metrics(wfm)
     qm_params = sqm.get_default_qm_params()
     qm_params["nn_isolation"]["max_spikes"]=10000
-    sqm.compute_quality_metrics(waveform_extractor=wf, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
+    sqm.compute_quality_metrics(waveform_extractor=wfm, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
     print("completet!!!!_quality_metrix_part")
     path_iron = Path(path + "_manual")
-    sex.export_to_phy(waveform_extractor=wf,
+    sex.export_to_phy(waveform_extractor=wfm,
                       output_folder = path_iron,
                       remove_if_exists=True,
                       copy_binary=True)
 
-    wf.save(Path(path + "_manual/waveforms"), format='binary')
+    wfm.save(Path(path + "_manual/waveforms"), format='binary')
     print("completet!!!!_export_to_phy_part")
 if __name__ == "__main__":
     main()

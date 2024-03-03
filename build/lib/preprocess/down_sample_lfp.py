@@ -87,9 +87,9 @@ def down_sample_lfp(file_path,raw_path):
     np.save(path_iron / 'lfp_car.npy',  np_lfp_car)
     np.save(path_iron / 'lfp_raw.npy', np_lfp)  # Save the LFP data
 
-    print(f"shape {np_lfp.shape}")
-    print(f"descriptions{lfp.get_binary_description()}")
-    print(np_lfp)
+    # print(f"shape {np_lfp.shape}")
+    # print(f"descriptions{lfp.get_binary_description()}")
+    # print(np_lfp)
 
 def add_lfp2nwb(filename,channel2selec,folder1_path):
 
@@ -100,8 +100,8 @@ def add_lfp2nwb(filename,channel2selec,folder1_path):
         #device1 = read_nwbfile.add_device(device)
         device1 = read_nwbfile.electrodes.to_dataframe()
         regions=read_nwbfile.create_electrode_table_region(region, "a", name='electrodes')
-        print(device1)
-        print(regions.to_dataframe())
+        # print(device1)
+        # print(regions.to_dataframe())
 
         lfp_times = np.load(fr"{folder1_path}/lfp_times.npy")
         lfp_raw = np.load(fr"{folder1_path}/lfp_raw.npy")

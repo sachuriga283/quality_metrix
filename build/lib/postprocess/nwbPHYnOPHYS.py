@@ -67,23 +67,22 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     converter = ConverterPipe(data_interfaces=[interface_ophys, interface_phy,], verbose=False)
     # Extract what metadata we can from the source files
     metadata = converter.get_metadata()
-    print(metadata)
     arr_with_new_col = load_positions(path,vedio_search_directory,folder_path,UD)
-    print(f"{arr_with_new_col.shape[1]} output the shape of the array")
+    # print(f"{arr_with_new_col.shape[1]} output the shape of the array")
 
     snout2neck = arr_with_new_col[:,[0,1,2,3,4]]
     neck2back4 = arr_with_new_col[:,[0,3,4,5,6]]
 
-    print(f"snout2neck: {snout2neck}")  
-    print(f"neck2back4: {neck2back4}")
+    # print(f"snout2neck: {snout2neck}")  
+    # print(f"neck2back4: {neck2back4}")
 
     hd=calc_head_direction(snout2neck)
     bd=calc_head_direction(neck2back4)
     md,new_pos = moving_direction(arr_with_new_col )
-    print(f"position: {new_pos}")
-    print(f"moving Directions: {md.shape}")
-    print(f"Head Directions: {hd}")
-    print(f"Body Directions: {bd}")
+    # print(f"position: {new_pos}")
+    # print(f"moving Directions: {md.shape}")
+    # print(f"Head Directions: {hd}")
+    # print(f"Body Directions: {bd}")
 
     position_spatial_series = SpatialSeries(
         name="SpatialSeries",

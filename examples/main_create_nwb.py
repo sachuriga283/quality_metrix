@@ -24,7 +24,7 @@ path_save = base_data_folder/fr"nwb"
 counter = 0
 def main():
     
-    #getting sorted files
+    #getting sorted files02
     folder_path = fr"{str(base_data_folder)}/Ephys_Recording/CR_CA1/{ID}/"
     ##for quality metrix
     sorted_files = load_data(folder_path, file_suffix='_phy_k')
