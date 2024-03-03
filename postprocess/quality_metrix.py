@@ -65,7 +65,8 @@ def qualitymetrix(path):
                               sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
     
     #get potential merging sorting objects
-    print("processing potential merge...")
+    print("processing potential merge...\n")
+    
     sort_merge = get_potential_merge(sorting, wf)
     wfm = si.extract_waveforms(rec_save, sort_merge, folder='C:/temp_waveform/', overwrite=True, 
                               sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
