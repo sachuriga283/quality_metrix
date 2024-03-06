@@ -16,11 +16,11 @@ from postprocess.add_wfcor import add_wf_cor
 # set params for nwb
 
 sex = "F"
-animals = ["65409", "65410"] 
+animals = ["65409","65410"] 
 age = "P45+"
 species = "Mus musculus"
 vedio_search_directory = base_data_folder/fr"Ephys_Vedio/CR_CA1/"
-path_save = base_data_folder/fr"nwb"
+path_save = base_data_folder/fr"nwb/CR_CA1"
 
 def main():
     for indvi in animals:
@@ -30,7 +30,6 @@ def main():
         folder_path = fr"{str(base_data_folder)}/Ephys_Recording/CR_CA1/{ID}/"
         ##for quality metrix
         sorted_files = load_data(folder_path, file_suffix='_phy_k')
-
         for file in sorted_files:
             print(file)
             qualitymetrix(file)

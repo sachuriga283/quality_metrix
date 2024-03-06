@@ -30,7 +30,6 @@ def qualitymetrix(path):
         except AssertionError:
             stream_name = 'Record Node 101#Acquisition_Board-100.Rhythm Data'
             recording = se.read_openephys(raw_path, stream_name=stream_name, load_sync_timestamps=True)
-
     import probeinterface as pi
 
     # from probeinterface import plotting
@@ -69,31 +68,31 @@ def qualitymetrix(path):
     
     sort_merge = get_potential_merge(sorting, wf)
 
-
     print(f"get times vec for merge sorts{sort_merge.has_time_vector()}")
     wfm = si.extract_waveforms(rec_save, sort_merge, folder='C:/temp_waveform/', overwrite=True, 
                               sparse=True, method="by_property",by_property="group",max_spikes_per_unit=1000)
 
-
-    spike_locations = post.compute_unit_locations(waveform_extractor=wfm,
+    wf=wfm
+    print("completet!!!!waveform_part")
+    spike_locations = post.compute_unit_locations(waveform_extractor=wf,
                                                    method= 'monopolar_triangulation',
                                                   radius_um=50.)
 
     from spikeinterface.postprocessing import compute_principal_components,compute_template_metrics
-    compute_principal_components(waveform_extractor=wfm,n_components=3,whiten=True,mode='by_channel_local',dtype='float64')
-    compute_template_metrics(wfm)
+    compute_principal_components(waveform_extractor=wf,n_components=3,whiten=True,mode='by_channel_local',dtype='float64')
+    compute_template_metrics(wf)
     qm_params = sqm.get_default_qm_params()
     qm_params["nn_isolation"]["max_spikes"]=10000
-    sqm.compute_quality_metrics(waveform_extractor=wfm, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
+    sqm.compute_quality_metrics(waveform_extractor=wf, qm_params=qm_params,sparsity=wf.sparsity, skip_pc_metrics=False)
     print("completet!!!!automerge & quality_metrix_part")
 
     path_iron = Path(path + "_manual")
-    sex.export_to_phy(waveform_extractor=wfm,
+    sex.export_to_phy(waveform_extractor=wf,
                       output_folder = path_iron,
                       remove_if_exists=True,
                       copy_binary=True)
 
-    wfm.save(Path(path + "_manual/waveforms"), format='binary')
+    wf.save(Path(path + "_manual/waveforms"), format='binary')
     print("completet!!!!_export_to_phy_part")
 if __name__ == "__main__":
     main()
