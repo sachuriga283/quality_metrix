@@ -45,6 +45,7 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     print(file[1])
 
     ECEPHY_DATA_PATH = file[0]
+    
     stream_name = 'Record Node 102#OE_FPGA_Acquisition_Board-101.Rhythm Data'
     folder_path = fr"{ECEPHY_DATA_PATH}/Record Node 102"
 
@@ -52,7 +53,16 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     folder_path = Path(folder_path)
 
     # Change the folder_path to the appropriate location in your system
-    interface_ophys = OpenEphysRecordingInterface(folder_path=folder_path,stream_name=stream_name)
+    try:
+        interface_ophys = OpenEphysRecordingInterface(folder_path=folder_path,stream_name=stream_name)
+    except AssertionError:
+        try:
+            stream_name = 'Record Node 102#OE_FPGA_Acquisition_Board-101.Rhythm Data'
+            interface_ophys = OpenEphysRecordingInterface(folder_path=folder_path,stream_name=stream_name)
+        except AssertionError:
+            folder_path = fr"{ECEPHY_DATA_PATH}/Record Node 101"
+            stream_name = 'Record Node 101#Acquisition_Board-100.Rhythm Data'
+            interface_ophys = OpenEphysRecordingInterface(folder_path=folder_path,stream_name=stream_name)
 
     # Extract what metadata we can from the source files
     folder1_path = f"{path}"  # Change the folder_path to the location of the data in your system
@@ -60,8 +70,14 @@ def nwbPHYnOPHYS(path,sex,ages,species,vedio_search_directory,path_to_save_nwbfi
     # if UD[0] == "65409":
     print(fr"Animal number is {UD[0]} replacing the spike times")
     sample_num = np.load(fr"{folder1_path}/spike_times.npy")
-    timestemp = np.load(fr'{folder_path}/experiment1/recording1/continuous/OE_FPGA_Acquisition_Board-101.Rhythm Data/sample_numbers.npy')
+    try:
+        timestemp = np.load(fr'{folder_path}/continuous/OE_FPGA_Acquisition_Board-101.Rhythm Data/sample_numbers.npy')
+    except FileNotFoundError:
+        folder_path = fr"{ECEPHY_DATA_PATH}/Record Node 101"
+        # S:\Sachuriga\Ephys_Recording\CR_CA1\65588\65588_2024-03-06_15-45-53_A\Record Node 101\experiment1\recording1\continuous\Acquisition_Board-100.Rhythm Data
+        timestemp = np.load(fr'{folder_path}/experiment1/recording1/continuous/Acquisition_Board-100.Rhythm Data/sample_numbers.npy')
     print(folder_path)
+    
     time_spk = timestemp[sample_num]
     np.save(fr"{folder1_path}/spike_times.npy",time_spk)
     interface_phy = PhySortingInterface(folder_path=folder1_path, verbose=True)
